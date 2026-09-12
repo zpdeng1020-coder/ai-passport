@@ -16,6 +16,12 @@ idf_component_register(
          "tracker_alarm.c"
          "tracker_ui.c"
          "tracker_power.c"
+         "cosmic_sonar.c"
+         "cosmic_quiet_scout.c"
+         "cosmic_orbit_weather.c"
+         "cosmic_sos_beacon.c"
+         "cosmic_power.c"
+         "cosmic_ui.c"
          "lv_font_cn_16.c"
     INCLUDE_DIRS "."
     REQUIRES bsp bt esp_event esp_hw_support esp_netif esp_timer esp_wifi nvs_flash

@@ -12,12 +12,13 @@
 #include "bsp_pins.h"
 #include "demo.h"
 #include "ui_pixel.h"
-#include "tracker_engine.h"
 #include "tracker_alarm.h"
-#include "tracker_wifi_spy.h"
-#include "tracker_ble_scanner.h"
-#include "tracker_ui.h"
-#include "tracker_power.h"
+#include "cosmic_ui.h"
+#include "cosmic_power.h"
+#include "cosmic_sonar.h"
+#include "cosmic_quiet_scout.h"
+#include "cosmic_orbit_weather.h"
+#include "cosmic_sos_beacon.h"
 #include "lvgl.h"
 #include "esp_log.h"
 #include "esp_sleep.h"
@@ -27,10 +28,10 @@ static const char *TAG = "main";
 LV_FONT_DECLARE(lv_font_cn_16);
 
 static const demo_entry_t DEMOS[] = {
-    { "防追踪雷达", demo_radar_enter, demo_radar_exit, demo_radar_key },
-    { "冷热寻物",   demo_hotcold_enter, demo_hotcold_exit, demo_hotcold_key },
-    { "偷拍排查",   demo_wifi_spy_enter, demo_wifi_spy_exit, demo_wifi_spy_key },
-    { "白名单",     demo_whitelist_enter, demo_whitelist_exit, demo_whitelist_key },
+    { "射电声呐",   demo_cosmic_sonar_enter,   demo_cosmic_sonar_exit,   demo_cosmic_sonar_key },
+    { "荒野罗盘",   demo_quiet_scout_enter,    demo_quiet_scout_exit,    demo_quiet_scout_key },
+    { "空间站视界", demo_orbit_tracker_enter,  demo_orbit_tracker_exit,  demo_orbit_tracker_key },
+    { "求救信标",   demo_sos_beacon_enter,     demo_sos_beacon_exit,     demo_sos_beacon_key },
 };
 #define DEMO_COUNT (sizeof(DEMOS) / sizeof(DEMOS[0]))
 
@@ -52,7 +53,7 @@ static void menu_refresh(void) {
 }
 
 static void menu_build(void) {
-    s_menu_scr = ui_pixel_screen_create("安全哨兵");
+    s_menu_scr = ui_pixel_screen_create("星原探针");
 
     // 右上角电量显示 (不遮挡白云)
     int soc = bsp_battery_soc();
@@ -97,7 +98,7 @@ static void enter_menu(void) {
 
 static void on_power_timer(lv_timer_t *t) {
     (void)t;
-    tracker_power_tick(0);
+    cosmic_power_tick(0);
 }
 
 static void on_key(bsp_btn_t btn, bsp_btn_ev_t ev, void *user) {
@@ -105,15 +106,15 @@ static void on_key(bsp_btn_t btn, bsp_btn_ev_t ev, void *user) {
     if (!bsp_lvgl_lock(500)) return;
 
     // 智能熄屏拦截: 若屏幕处于熄灭休眠状态，首按仅唤醒屏幕并消费事件，防止口袋/背包误触
-    if (tracker_power_handle_key_event(btn, ev)) {
+    if (cosmic_power_handle_key_event(btn, ev)) {
         bsp_lvgl_unlock();
         return;
     }
 
     if (s_active >= 0) {
-        // 核心规范: 在任何子功能页面中长按 OK 键，统一拦截并返回安全哨兵主菜单
+        // 核心规范: 在任何子功能页面中长按 OK 键，统一拦截并返回主菜单
         if (btn == BSP_BTN_OK && ev == BSP_BTN_LONG) {
-            ESP_LOGI(TAG, "全局拦截: 长按确定键返回安全哨兵主菜单");
+            ESP_LOGI(TAG, "全局拦截: 长按确定键返回星原探针主菜单");
             DEMOS[s_active].exit();
             tracker_alarm_beep(1200, 60);
             enter_menu();
@@ -145,7 +146,7 @@ static void on_key(bsp_btn_t btn, bsp_btn_ev_t ev, void *user) {
 }
 
 void app_main(void) {
-    ESP_LOGI(TAG, "FoloToy AI Passport 随身安全哨兵启动");
+    ESP_LOGI(TAG, "FoloToy AI Passport 星原探针 (Cosmic & Earth Radio Explorer) 启动");
     esp_sleep_wakeup_cause_t wakeup = esp_sleep_get_wakeup_cause();
     if (wakeup != ESP_SLEEP_WAKEUP_UNDEFINED) {
         ESP_LOGI(TAG, "休眠唤醒原因: %d", wakeup);
@@ -166,23 +167,26 @@ void app_main(void) {
     bsp_audio_init();
     bsp_battery_init();
 
-    // 初始化随身安全哨兵底层引擎 (BLE 监听、Wi-Fi 探测、威胁状态机、蜂鸣器、智能电源)
-    tracker_engine_init();
+    // 初始化蜂鸣器
     tracker_alarm_init();
-    tracker_wifi_spy_init();
-    tracker_power_init();
-    tracker_ble_scanner_start();
+
+    // 初始化星原探针底层引擎 (射电声呐、荒野罗盘、天体过境、求救信标、智能电源)
+    cosmic_sonar_init();
+    cosmic_quiet_init();
+    cosmic_orbit_init();
+    cosmic_sos_init();
+    cosmic_power_init();
 
     for (size_t i = 0; i < DEMO_COUNT; i++) {
         s_ok[i] = true;
     }
 
-    // 开机进入全中文安全哨兵功能主菜单并启动智能电源定时器
+    // 开机进入全中文星原探针主菜单并启动智能电源定时器
     if (bsp_lvgl_lock(1000)) {
         enter_menu();
         lv_timer_create(on_power_timer, 250, NULL);
         bsp_lvgl_unlock();
     }
 
-    ESP_LOGI(TAG, "安全哨兵系统初始化就绪，进入主菜单");
+    ESP_LOGI(TAG, "星原探针系统初始化就绪，进入主菜单");
 }

@@ -4,6 +4,7 @@ sdkconfig.old
 managed_components/
 .vscode/
 .idea/
+.DS_Store
 backup_cardid.bin
 test_runner*
 test_power_runner*
