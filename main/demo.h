@@ -32,3 +32,9 @@ void demo_ble_key(bsp_btn_t btn, bsp_btn_ev_t ev);
 
 void demo_low_power_enter(void); void demo_low_power_exit(void);
 void demo_low_power_key(bsp_btn_t btn, bsp_btn_ev_t ev);
+
+// AI Passport 随身安全哨兵四大核心功能
+void demo_radar_enter(void);     void demo_radar_exit(void);     void demo_radar_key(bsp_btn_t btn, bsp_btn_ev_t ev);
+void demo_hotcold_enter(void);   void demo_hotcold_exit(void);   void demo_hotcold_key(bsp_btn_t btn, bsp_btn_ev_t ev);
+void demo_wifi_spy_enter(void);  void demo_wifi_spy_exit(void);  void demo_wifi_spy_key(bsp_btn_t btn, bsp_btn_ev_t ev);
+void demo_whitelist_enter(void); void demo_whitelist_exit(void); void demo_whitelist_key(bsp_btn_t btn, bsp_btn_ev_t ev);

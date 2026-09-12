@@ -4,3 +4,8 @@ sdkconfig.old
 managed_components/
 .vscode/
 .idea/
+backup_cardid.bin
+test_runner*
+test_power_runner*
+__pycache__/
+*.pyc

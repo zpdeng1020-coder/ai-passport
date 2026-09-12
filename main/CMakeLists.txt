@@ -10,6 +10,13 @@ idf_component_register(
          "demo_wifi.c"
          "demo_ble.c"
          "demo_low_power.c"
+         "tracker_engine.c"
+         "tracker_wifi_spy.c"
+         "tracker_ble_scanner.c"
+         "tracker_alarm.c"
+         "tracker_ui.c"
+         "tracker_power.c"
+         "lv_font_cn_16.c"
     INCLUDE_DIRS "."
     REQUIRES bsp bt esp_event esp_hw_support esp_netif esp_timer esp_wifi nvs_flash
 )

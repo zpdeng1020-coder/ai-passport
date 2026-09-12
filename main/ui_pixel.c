@@ -33,6 +33,18 @@ static void add_cloud(lv_obj_t *parent, int x, int y)
     block(parent, x + 27, y + 1, 9, 8, 0xFFFFFF);
 }
 
+LV_FONT_DECLARE(lv_font_cn_16);
+
+static bool str_has_non_ascii(const char *s)
+{
+    if (!s) return false;
+    while (*s) {
+        if ((uint8_t)*s >= 0x80) return true;
+        s++;
+    }
+    return false;
+}
+
 lv_obj_t *ui_pixel_screen_create(const char *title)
 {
     lv_obj_t *scr = lv_obj_create(NULL);
@@ -53,7 +65,8 @@ lv_obj_t *ui_pixel_screen_create(const char *title)
     lv_obj_t *plate = block(scr, 5, 8, 151, 33, UI_PAPER);
     lv_obj_set_style_border_color(plate, lv_color_hex(UI_INK), 0);
     lv_obj_set_style_border_width(plate, 3, 0);
-    lv_obj_t *heading = ui_pixel_label(plate, title, &lv_font_montserrat_20, UI_INK);
+    const lv_font_t *font = str_has_non_ascii(title) ? &lv_font_cn_16 : &lv_font_montserrat_20;
+    lv_obj_t *heading = ui_pixel_label(plate, title, font, UI_INK);
     lv_obj_center(heading);
     return scr;
 }
